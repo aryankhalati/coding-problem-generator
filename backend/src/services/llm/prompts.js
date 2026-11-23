@@ -1,3 +1,30 @@
+const THEMES = [
+  "a space station",
+  "a medieval castle",
+  "a video game tournament",
+  "a pirate ship",
+  "a bakery",
+  "a train network",
+  "a library",
+  "a music festival",
+  "a robot factory",
+  "a zoo",
+  "a cricket league",
+  "a haunted house",
+  "a farm",
+  "a hospital",
+  "a deep-sea expedition",
+  "a school sports day",
+  "a movie studio",
+  "a mountain trek",
+  "a food delivery app",
+  "a weather station",
+];
+
+function randomTheme() {
+  return THEMES[Math.floor(Math.random() * THEMES.length)];
+}
+
 function languageRule(language) {
   const rules = {
     Java: "9. The Java program MUST declare exactly one top-level class named Main (public class Main) containing public static void main. Read input with java.util.Scanner or BufferedReader.",
@@ -15,6 +42,7 @@ Create ONE original coding problem with these settings:
 - Topic: ${topic}
 - Difficulty: ${difficulty}
 - Reference solution language: ${language}
+- Story setting: ${randomTheme()} (use this setting for the story, unless the extra instructions below say otherwise)
 ${notes ? `- Extra instructions from the user: ${notes}` : ""}
 
 STRICT RULES:
@@ -25,7 +53,7 @@ STRICT RULES:
 5. Avoid the most generic textbook problems (for example "reverse an array" or "two sum"). Give the problem a short, concrete real-world story.
 6. "referenceSolution" must be a COMPLETE, runnable ${language} program, with all imports and a main entry point, that reads stdin and prints stdout. It must contain no markdown fences and no explanations.
 7. "sampleInput" must be exactly what is fed to stdin, and "sampleOutput" must be exactly what the program prints. Work the sample out carefully by hand.
-8. 8. Do not include test cases here.
+8. Do not include test cases here.
 ${languageRule(language)}
 10. Write in plain text only. Do NOT use LaTeX or dollar signs for math. Write constraints and formulas with plain characters, for example: 1 <= N <= 1000, a[i], sum of a[i].
 11. The description must be final and polished. Never include self-corrections, drafts, or thinking aloud, and never use phrases like "Wait" or "let's refine". Decide every detail (ties, unreachable cases, special behavior) BEFORE writing, then state each rule exactly once.
