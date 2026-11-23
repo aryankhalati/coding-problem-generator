@@ -20,5 +20,11 @@ export function useGenerateProblem() {
     }
   }
 
-  return { result, loading, error, generate };
+  // Shows a saved result without calling the backend.
+  function loadSaved(data) {
+    setError("");
+    setResult({ ...data, isSaved: true });
+  }
+
+  return { result, loading, error, generate, loadSaved };
 }

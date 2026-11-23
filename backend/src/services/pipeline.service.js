@@ -241,23 +241,58 @@ function downgradeTests(testCases, sampleStatus) {
   };
 }
 
+// Phrases that show the model "thinking aloud" inside the problem text,
+// plus LaTeX leftovers that the UI cannot render.
+const LEAK_PATTERNS = [
+  /(^|[.!?:]\s+)Wait\b/m,
+  /(^|[.!?]\s+)Actually,/m,
+  /let'?s (re-?define|refine|re-?think|re-?calculate|recompute|re-?evaluate)/i,
+  /\blet me (re|think|correct)/i,
+  /\bhold on\b/i,
+  /\bon second thought\b/i,
+  /\bhmm+\b/i,
+  /\boops\b/i,
+  /\\(neq|leq|geq|le|ge|cdot|times|sum|text|frac)\b/,
+];
+
+export function findLeaks(problem) {
+  const text = [
+    problem.statement,
+    problem.description,
+    problem.sampleExplanation,
+    problem.inputFormat,
+    problem.outputFormat,
+    ...problem.constraints,
+  ].join("\n");
+  return LEAK_PATTERNS.filter((p) => p.test(text)).map((p) => p.source);
+}
+
 export async function runPipeline(config) {
   let problem;
   let sample;
+  let leaks = [];
   let attempts = 0;
 
   for (let attempt = 1; attempt <= MAX_PROBLEM_ATTEMPTS; attempt++) {
     attempts = attempt;
     problem = await generateProblem(config);
+
+    // Cheap text check first: skip the sandbox for a problem we will discard anyway.
+    leaks = findLeaks(problem);
+    if (leaks.length > 0 && attempt < MAX_PROBLEM_ATTEMPTS) {
+      console.warn(`Attempt ${attempt}: drafting text found in problem, regenerating...`);
+      continue;
+    }
+
     sample = await verifySample(problem, config.language);
 
-    if (sample.status === "verified") break;
+    if (sample.status === "verified" && leaks.length === 0) break;
     if (sample.status === "unavailable") break; // regenerating will not fix a down sandbox
 
     console.warn(`Attempt ${attempt}: sample check ${sample.status}, regenerating...`);
   }
 
-  const validation = { sample, attempts };
+  const validation = { sample, attempts, leakedText: leaks.length > 0 };
 
   // No point testing if the sandbox is down.
   if (sample.status === "unavailable") {

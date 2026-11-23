@@ -92,6 +92,11 @@ export default function ValidationReport({ validation }) {
               {JSON.stringify(sample.actualOutput)}.
             </p>
           )}
+                    {validation.leakedText && (
+            <p className="mt-1 text-xs text-amber-300">
+              Warning: the problem text may contain leftover drafting notes from the AI.
+            </p>
+          )}
           {validation.attempts > 1 && (
             <p className="mt-1 text-xs text-gray-500">
               Took {validation.attempts} generation attempts. Earlier attempts failed the sample
